@@ -33,6 +33,7 @@ var ROUTES = {
     '#/user': navbar.concat([UserView()]),
     '#/view': navbar.concat([ContentDisplayView(), ContentView()]),
     '#/about': navbar.concat([AboutView()]),
+    '#/contribute': [HeaderView(), ContributeView()],
     '#/landing': [MainView(), ListView('preview')]
 };
 

@@ -599,6 +599,49 @@ var AboutView = function(){
     };
 };
 
+function ContributeView(){
+    var gen_input = function(name, placeHolder, type){
+        if(!type){ type='input'; }
+
+        return {
+            $type:type,
+            name:name,
+            placeHolder:placeHolder,
+            rows:'5'
+        };
+    };
+
+    return {
+        class:'contribute',
+        $components:[{
+            class:'cover'
+        },
+            HeaderBuffer(),
+        {
+            class:'title',
+            $text:'Contribute'
+        },{
+            class:'subtitle',
+            $text:'Share your special place with us'
+        },{
+            $type:'form',
+            action:'https://docs.google.com/forms/d/e/1FAIpQLSfzRAaCJlZd0iXAehjAWs0zT5NcALjwnXdXX338E5Mk0EWnug/formResponse', 
+            method:'POST',
+            $components:[
+                gen_input('emailAddress', 'Your e-mail'),
+                gen_input('entry.1567473725', 'Your name'),
+                gen_input('entry.2137145260', 'Name of place'),
+                gen_input('entry.328328862', 'Genre'),
+                gen_input('entry.999594195', 'Share with us why you love this place', 'textarea'),
+                {
+                    $type:'button',
+                    $text:'send'
+                }
+            ]
+        }]
+    };
+}
+
 var $root = {
     $cell:true,
     $type:'body',
