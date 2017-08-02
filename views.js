@@ -123,7 +123,7 @@ var HeaderView = function(){
                     }]
                 },
                     gen_link('#/about', 'About'),
-                    gen_link(FORM_CONTRIBUTE, 'Contribute'),
+                    gen_link('#/contribute', 'Contribute'),
                     gen_link(FORM_CONTACT, 'Contact')
                 ]
             },{
@@ -625,7 +625,7 @@ function ContributeView(){
             $text:'Share your special place with us'
         },{
             $type:'form',
-            action:'https://docs.google.com/forms/d/e/1FAIpQLSfzRAaCJlZd0iXAehjAWs0zT5NcALjwnXdXX338E5Mk0EWnug/formResponse', 
+            action:FORM_CONTRIBUTE,
             method:'POST',
             $components:[
                 gen_input('emailAddress', 'Your e-mail'),
