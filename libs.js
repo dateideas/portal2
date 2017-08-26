@@ -42,6 +42,7 @@ function auth0_getProf(res){
 
 // google analytics
 function ga_set_uid(){
+    if(store.user.untrack){ return; }
 	ga('set', 'userId', store.user.id);
 }
 
@@ -53,13 +54,19 @@ function ga_send_page(page){
     });
 }
 
-function ga_send_event(cat, action, label){
+function ga_send_event(action, desc){
     ga_set_uid();
 
-    label = store.user.id + '|' + label;
     ga('send', 'event', {
-        'eventCategory':cat,
-        'eventAction':action,
-        'eventLabel':label
+        'eventCategory':action,
+        'eventAction':desc,
+        'eventLabel':store.user.id
     });
+}
+
+function ga_outbound(url){
+    ga_set_uid();
+
+    ga_send_event('outbound_click', url);
+    document.location.href = url;
 }

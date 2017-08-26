@@ -25,6 +25,15 @@ function route_login(){
     }
 }
 
+function route_untrack(){
+    store.user.untrack = true;
+    if(checkLS()){
+        localStorage.setItem('user_track', true);
+    }
+    
+    return goto('list');
+}
+
 /* defaults */
 var navbar = [HeaderView(), HeaderBuffer()];
 
@@ -33,6 +42,7 @@ var ROUTES = {
     '#/user': navbar.concat([UserView()]),
     '#/view': navbar.concat([ContentDisplayView(), ContentView()]),
     '#/about': navbar.concat([AboutView()]),
+    '#/contact': [HeaderView(), ContactUsView()],
     '#/contribute': [HeaderView(), ContributeView()],
     '#/landing': [MainView(), ListView('preview')]
 };
@@ -42,7 +52,8 @@ var FUNCS = {
     '#/user': route_user,
     '#/view': route_view,
     '#/login': route_login,
-    '#/logout': route_logout
+    '#/logout': route_logout,
+    '#/untrack': route_untrack
 };
 
 function get_match(list, key){
@@ -72,7 +83,9 @@ function route(){
         }else{
             return goto('landing');
         }
-    }
+    } 
+
+    ga_send_page(hash);
 
     document.body._update(routes, func);
 }

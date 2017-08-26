@@ -1,5 +1,10 @@
-var FORM_CONTRIBUTE = 'https://docs.google.com/forms/d/e/1FAIpQLSfzRAaCJlZd0iXAehjAWs0zT5NcALjwnXdXX338E5Mk0EWnug/viewform';
-var FORM_CONTACT = 'https://insights.hotjar.com/s?siteId=533832&surveyId=25873';
+var FORM_CONTRIBUTE = 'https://docs.google.com/forms/d/e/1FAIpQLSfzRAaCJlZd0iXAehjAWs0zT5NcALjwnXdXX338E5Mk0EWnug/formResponse';
+var FORM_CONTACT = 'https://docs.google.com/forms/d/e/1FAIpQLSdvI_SQJynFxle1j-yakIMA382w0kpBzF_g_NX4ZiauxCngpg/formResponse';
+
+var SMEDIA_FB = '';
+var SMEDIA_LK = '';
+var SMEDIA_TW = '';
+var SMEDIA_YT = '';
 
 // CardView and ListView
 var CardView = function(obj){
@@ -8,8 +13,12 @@ var CardView = function(obj){
             class: 'card__info card__info--save',
             saved: obj.saved,
             onclick: function(evt){
-                if(!this.saved){ this.saved = true; }else{
+                if(!this.saved){
+                    this.saved = true;
+                    ga_send_event('saves_save', obj.id);
+                }else{
                     this.saved = false;
+                    ga_send_event('saves_unsave', obj.id);
                 }
 
                 api.save(obj.id);
@@ -30,6 +39,10 @@ var CardView = function(obj){
 
         if(obj.place){
             lis.push(gen_li('card__info card__info--place', obj.place));
+        }
+        
+        if(obj.time){
+            lis.push(gen_li('card__info card__info--ptime', obj.time));
         }
 
         return lis;
@@ -110,7 +123,7 @@ var HeaderView = function(){
         id:'header',
         class:'container',
         $components:[{
-            class:'header row',
+            class:'header row nomobile',
             $components:[{
                 class:'col-sm',
                 $components:[{
@@ -124,7 +137,7 @@ var HeaderView = function(){
                 },
                     gen_link('#/about', 'About'),
                     gen_link('#/contribute', 'Contribute'),
-                    gen_link(FORM_CONTACT, 'Contact')
+                    gen_link('#/contact', 'Contact')
                 ]
             },{
                 class:'col-sm',
@@ -133,6 +146,44 @@ var HeaderView = function(){
                     gen_user()
                 ]
             }]
+        },{
+            $type:'header',
+            class:'header row mobile',
+            $components:[{
+                class:'left',
+                $components:[{
+                    $type:'label',
+                    for:'sidebar',
+                    class:'.drawer-toggle',
+                    $text:'&#xf0c9;'
+                },{
+                    $type:'a',
+                    href:'#/list',
+                    $components:[{ 
+                        $type:'img',
+                        class:'header__logo',
+                        src:'assets/logo.png'
+                    }]
+                }]
+            },
+                gen_user()
+            ]
+        },{
+            $type:'input',
+            type:'checkbox',
+            id:'sidebar'
+        },{
+            class:'drawer mobile',
+            $components:[{
+                $type:'label',
+                for:'sidebar',
+                class:'close'
+            },
+                gen_link('#/about', 'About'),
+                gen_link('#/contribute', 'Contribute'),
+                gen_link('#/contact', 'Contact'),
+                gen_link('#/logout', 'Sign Out')    
+            ]
         }]
     };
 };
@@ -156,21 +207,26 @@ var FeatureView = function(){
             $components:[{
                 class:'featured__overlay__arrow',
                 $text:'&#xf104;',
-                onclick: function(){
+                onclick: function(e){
                     $('#featured')._prev();
+                    e.stopPropagation();
                 }
             }, {
                 class:'featured__overlay__arrow',
                 $text:'&#xf105;',
-                onclick: function(){
+                onclick: function(e){
                     $('#featured')._next();
+                    e.stopPropagation();
                 }
-            }]
+            }],
+            onclick: function(){
+                $('#featured')._onclick();
+            }
         },{
             $type:'img',
             class:'featured__image'
         }],
-        _index: -1,
+        _index: 0,
         _update: function(val){
             var featured = store.pages.featured;
             this._index += val + featured.length;
@@ -190,7 +246,19 @@ var FeatureView = function(){
             });
         },
         _next:function(){ this._update(1); },
-        _prev:function(){ this._update(-1); }
+        _prev:function(){ this._update(-1); },
+        _onclick:function(){
+            var id = store.pages.featured[this._index];
+            var url = store.pages[id].featured_link;
+            
+            ga_send_event('featured_click', id);
+            if(url){ 
+                ga_outbound(url); 
+            }
+            else{
+                goto('view/'+id);
+            }
+        }
     };
 };
 
@@ -207,7 +275,7 @@ var UserView = function(){
                 $text:'Chat Notifications'
             },{
                 class:'modal__info',
-                $text:'This service allows us to notify you on Telegram when new dateIdeas have been posted.'
+                $text:'This service allows us to notify you on Telegram when new dateIdeas have been posted. No worries, you can always unsub from us :)'
             },{
                 class:'modal__subtitle',
                 $text:'Enter your phone number (without ext)'
@@ -275,29 +343,6 @@ var UserView = function(){
             }]
         };
 
-    var genTab = function(partialId, tabText, activated){
-        var objs = [{
-            id:'tab-'+partialId,
-            $type:'input',
-            type:'radio',
-            name:'tabs-user',
-            'aria-hidden':true
-        },{
-            $type:'label',
-            class:'user__tabs__label',
-            $text:tabText,
-            for:'tab-'+partialId,
-            'aria-hidden':true
-        },
-        ListView('list--'+partialId)];
-
-        if(activated){
-            objs[0].checked = true;
-        }
-
-        return objs;
-    };
-
     return {
         id:'user',
         $components:[{
@@ -312,7 +357,7 @@ var UserView = function(){
             $type:'label',
             for:'modal-phone1',
             class:'user__phone',
-            $text:'update phone number'
+            $text:'edit phone number'
         },{
             $type:'input',
             id:'modal-phone1',
@@ -335,12 +380,7 @@ var UserView = function(){
             }]
         },
         HeaderBuffer(),
-        {
-            class:'tabs',
-            $components:
-                genTab('faves', 'favourites', true).concat(
-                genTab('ideas', 'saved ideas'))
-        }]
+        ListView('list--faves')]
     };
 };
 
@@ -352,7 +392,7 @@ var MainView = function(){
             class:'hero__overlay',
             $components:[{
                 $type:'img',
-                src:'assets/logo.png',
+                src:'assets/logo-padded.png',
                 class:'hero__logo'
             },{
                 $type:'button',
@@ -387,6 +427,22 @@ var MainView = function(){
     var InfoView = {
         class:'info',
         $components:[
+            {
+                'class':'info__overlay mobile',
+                $components:[{
+                    class:'arrow',
+                    $text:'&#xf104;',
+                    onclick:function(){
+                        $('.info')._show(-1);
+                    }
+                },{
+                    class:'arrow',
+                    $text:'&#xf105;',
+                    onclick:function(){
+                        $('.info')._show(1);
+                    }
+                }]
+            },
             gen_card(
                 'assets/header-1.png',
                 'New Experience',
@@ -402,7 +458,18 @@ var MainView = function(){
                 'Contribute',
                 'Send us your special date recommendations and get them featured in weekly recommendations'
             )
-        ]
+        ],
+        val: 0,
+        _show: function(diff){
+            this.val += diff;
+            this.val %= 3;
+            
+            for(var i=0; i<3; i++){ 
+                var ele = $('.info .card:nth-child('+(i+2)+')');
+                 
+                ele.style.display = (this.val==i)?'inline-block':'none';
+            }
+        }
     };
 
     var CoverImg = {
@@ -455,15 +522,22 @@ var ContentView = function(){
 
             if(obj.price){
                 content.push({
-                    class:'content__info__price',
+                    class:'content__info content__info--price',
                     $text:obj.price
                 });
             }
 
             if(obj.place){
                 content.push({
-                    class:'content__info__place',
+                    class:'content__info content__info--place',
                     $text:obj.place
+                });
+            }
+
+            if(obj.time){
+                content.push({
+                    class:'content__info content__info--ptime',
+                    $text:obj.time
                 });
             }
 
@@ -515,8 +589,6 @@ var ContentView = function(){
                         window.disqus_config = function(){
                             this.page.identifier = '/view/'+obj.id;
                             this.page.url = window.location.href.replace('/#/', '/');
-                            console.log(this.page.identifier);
-                            console.log(this.page.url);
                         };
 
                         if(!window.DISQUS){
@@ -610,34 +682,115 @@ function ContributeView(){
             rows:'5'
         };
     };
+    
+    var form = [
+        gen_input('entry.768945183', 'Your e-mail'),
+        gen_input('entry.1567473725', 'Your name'),
+        gen_input('entry.2137145260', 'Name of place'),
+        gen_input('entry.328328862', 'Genre'),
+        gen_input('entry.999594195', 'Share with us why you love this place', 'textarea'),
+        {
+            $type:'button',
+            $text:'send'
+        }
+    ];
 
     return {
         class:'contribute',
         $components:[{
-            class:'cover'
-        },
-            HeaderBuffer(),
-        {
-            class:'title',
-            $text:'Contribute'
-        },{
-            class:'subtitle',
-            $text:'Share your special place with us'
+            class:'content',
+            $components:[{
+                class:'cover'
+            },
+                HeaderBuffer(),
+            {
+                class:'title',
+                $text:'Contribute'
+            },{
+                class:'subtitle',
+                $text:'Share your special place with us'
+            },{
+                $type:'form',
+                class:'nomobile',
+                action:FORM_CONTRIBUTE,
+                method:'POST',
+                $components:form
+            }]
         },{
             $type:'form',
+            class:'mobile',
             action:FORM_CONTRIBUTE,
             method:'POST',
+            $components:form 
+        }]
+    };
+}
+
+function ContactUsView(){
+    var gen_input = function(name, placeHolder, type){
+        if(!type){ type='input'; }
+
+        return {
+            $type:type,
+            name:name,
+            placeHolder:placeHolder,
+            rows:'5'
+        };
+    };
+
+    var gen_link = function(text, link){
+        return {
+            $type:'a',
+            $text:text,
+            href:link
+        }
+    };
+    
+    var form = [{
+            class:'smedia',
             $components:[
-                gen_input('emailAddress', 'Your e-mail'),
-                gen_input('entry.1567473725', 'Your name'),
-                gen_input('entry.2137145260', 'Name of place'),
-                gen_input('entry.328328862', 'Genre'),
-                gen_input('entry.999594195', 'Share with us why you love this place', 'textarea'),
-                {
-                    $type:'button',
-                    $text:'send'
-                }
+                gen_link('&#xf082;', SMEDIA_FB),
+                gen_link('&#xf08c;', SMEDIA_LK),
+                gen_link('&#xf081;', SMEDIA_TW),
+                gen_link('&#xf166;', SMEDIA_YT),
             ]
+        },
+        gen_input('entry.848403666', 'Your email'),
+        gen_input('entry.2080510831', 'Your name'),
+        gen_input('entry.473017666', 'Leave your message here :)', 'textarea'),
+        {
+            $type:'button',
+            $text:'send'
+        }
+    ];
+
+    return {
+        class:'contactus',
+        $components:[{
+            'class':'content',
+            $components:[{
+                class:'cover'
+            },
+                HeaderBuffer(),
+            {
+                class:'title',
+                $text:'Contact Us'
+            },{
+                class:'subtitle',
+                $text:'Feedback? Ideas? Problems?'
+            },{
+                $type:'form',
+                class:'nomobile',
+                action:FORM_CONTACT,
+                method:'POST',
+                $components:form
+            }]
+        },{
+            $type:'form',
+            class:'mobile',
+            action:FORM_CONTACT,
+            method:'POST',
+            $components:form 
         }]
     };
 }

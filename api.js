@@ -52,8 +52,8 @@ var api = {
             if(obj.ok){
                 store.pages.list = [];
                 store.pages.list = obj['latest'];
-                store.pages.featured = obj['featured'];
-
+                store.pages.featured = store.pages.featured_default.concat(obj['featured']);
+                
                 obj['pages'].forEach(function(page){
                     var p_id = page['id']; 
                     store.pages[p_id] = page;

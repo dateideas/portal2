@@ -41,14 +41,17 @@ var store = {
     pages:{
         list: [],
         save: [],
-        featured: []
+        featured: [],
+        featured_default: []
     },
     user:{
         id_tkn: null,
         acc_tkn: null,
         picture: null, 
+        id: null,
         name: null, 
-        loaded: false
+        loaded: false,
+        untrack: false
     },
     reset_user: function(){
         for(key in this.user){
@@ -60,6 +63,8 @@ var store = {
             localStorage.removeItem('acc_tkn');
             localStorage.removeItem('user_pic');
             localStorage.removeItem('user_name');
+            localStorage.removeItem('user_id');
+            localStorage.removeItem('user_track');
         }
     }
 };
@@ -67,8 +72,10 @@ var store = {
 if(checkLS()){
     store.user.id_tkn = localStorage.getItem('id_tkn');
     store.user.acc_tkn = localStorage.getItem('acc_tkn');
+    store.user.id = localStorage.getItem('user_id');
     store.user.picture = localStorage.getItem('user_pic');
     store.user.name = localStorage.getItem('user_name');
+    store.user.untrack = localStorage.getItem('user_track');
 }
 
 if(!store.user.picture || !store.user.name){
@@ -86,3 +93,12 @@ if(!store.user.picture || !store.user.name){
 }else{
     store.user.loaded = true;
 }
+
+/* default featured */
+store.pages.featured_default = [
+    'featured-telegram'
+];
+store.pages['featured-telegram'] = {
+    featured: 'http://i.imgur.com/ysPDcyt.png',
+    featured_link: 'http://www.google.com'
+};
