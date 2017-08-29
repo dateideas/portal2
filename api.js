@@ -1,5 +1,5 @@
 var api = {
-    base: 'https://dateideas-ongspxm.rhcloud.com',
+    base: 'https://dateideas.herokuapp.com',
     
     // base function 
     send: function(url, func, openReq){
