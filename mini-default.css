@@ -1830,6 +1830,7 @@ table.striped tr:nth-of-type(2n) > td {
   height: auto;
 }
 
+/*
 @media screen and (max-width: 767px) {
   .tabs {
     -webkit-box-orient: vertical;
@@ -1852,6 +1853,7 @@ table.striped tr:nth-of-type(2n) > td {
     border-top: 0;
   }
 }
+*/
 
 /*
 	Definitions for contextual background elements, toasts and tooltips.

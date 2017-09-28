@@ -111,10 +111,6 @@ var HeaderView = function(){
                 class:'header__user__dpic',
                 $type:'img',
                 src:store.user.picture
-            }, {
-                class:'header__user__name',
-                $type:'span',
-                $text:store.user.name
             }]
         };
     }
@@ -132,7 +128,7 @@ var HeaderView = function(){
                     $components:[{ 
                         $type:'img',
                         class:'header__logo',
-                        src:'assets/logo.png'
+                        src:'assets/logo-padded.png'
                     }]
                 },
                     gen_link('#/about', 'About'),
@@ -162,7 +158,7 @@ var HeaderView = function(){
                     $components:[{ 
                         $type:'img',
                         class:'header__logo',
-                        src:'assets/logo.png'
+                        src:'assets/logo-padded.png'
                     }]
                 }]
             },
@@ -392,7 +388,7 @@ var MainView = function(){
             class:'hero__overlay',
             $components:[{
                 $type:'img',
-                src:'assets/logo-padded.png',
+                src:'assets/logo.png',
                 class:'hero__logo'
             },{
                 $type:'button',
@@ -612,7 +608,7 @@ var ContentView = function(){
 
 var ContentDisplayView = function(){
     function gen_diplay(pid, main){
-        var eleclass = 'content--display';
+        var eleclass = 'content--display nomobile';
         if(main){
             eleclass += ' content--display__main';
         }
@@ -625,7 +621,9 @@ var ContentDisplayView = function(){
                 var ele = this;
                 api.loadPage(pid, function(){
                     ele.src = store.pages[pid]['pic'];
+                    $('#content--display__overlay').style.backgroundImage = 'url("'+store.pages[pid]['pic']+'")';
                 });
+
             }
         };
     }
@@ -638,6 +636,7 @@ var ContentDisplayView = function(){
             this.$components = [];
 
             this.$components.push(gen_diplay(pids[0], true));
+            this.$components.push({id:'content--display__overlay', class:'mobile'});
         }
     };
 };
