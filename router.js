@@ -86,6 +86,10 @@ function route(){
     } 
 
     ga_send_page(hash);
+    
+    if(document.getElementById('sidebar')){
+        document.getElementById('sidebar').checked = false;
+    }
 
     document.body._update(routes, func);
 }

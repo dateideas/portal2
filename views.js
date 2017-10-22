@@ -2,9 +2,7 @@ var FORM_CONTRIBUTE = 'https://docs.google.com/forms/d/e/1FAIpQLSfzRAaCJlZd0iXAe
 var FORM_CONTACT = 'https://docs.google.com/forms/d/e/1FAIpQLSdvI_SQJynFxle1j-yakIMA382w0kpBzF_g_NX4ZiauxCngpg/formResponse';
 
 var SMEDIA_FB = '';
-var SMEDIA_LK = '';
-var SMEDIA_TW = '';
-var SMEDIA_YT = '';
+var SMEDIA_IG = '';
 
 // CardView and ListView
 var CardView = function(obj){
@@ -19,6 +17,11 @@ var CardView = function(obj){
                 }else{
                     this.saved = false;
                     ga_send_event('saves_unsave', obj.id);
+                    
+                    // fake remove from save list
+                    if(location.hash=='#/user'){
+                        document.getElementById('card-'+obj.id).style.display = 'none'; 
+                    }
                 }
 
                 api.save(obj.id);
@@ -57,6 +60,7 @@ var CardView = function(obj){
 
     return {
         class: 'card',
+        id: 'card-'+obj.id,
         onclick: function(){
             goto('view/'+obj['id']);
         },
@@ -86,6 +90,11 @@ var ListView = function(id){
         id:id,
         class:'list row',
         style:'height:auto;',
+        $components:[{
+            $type:'img',
+            class:'loading',
+            src:'assets/loading.gif'
+        }],
         _update: function(objs){
             this.$components = objs.map(CardView);
         }
@@ -197,7 +206,11 @@ var HeaderBuffer = function(){
 var FeatureView = function(){
     return {
         id:'featured',
-        $components:[],
+        $components:[{
+            $type:'img',
+            class:'loading',
+            src:'assets/loading.gif'
+        }],
         _components:[{
             class:'featured__overlay',
             $components:[{
@@ -548,6 +561,23 @@ var ContentView = function(){
                     this.innerHTML = obj.text;
                 }
             });
+            
+            content.push({
+                class: 'content_save',
+                $type: 'button',
+                saved: obj.saved,
+                onclick: function(){
+                    if(!this.saved){
+                        this.saved = true;
+                        ga_send_event('saves_save', obj.id); 
+                    }else{
+                        this.saved = false;
+                        ga_send_event('saves_unsave', obj.id);
+                    }
+
+                    api.save(obj.id);
+                }
+            });
 
             $('#details').$components = [{
                 id:'tab-details',
@@ -749,9 +779,7 @@ function ContactUsView(){
             class:'smedia',
             $components:[
                 gen_link('&#xf082;', SMEDIA_FB),
-                gen_link('&#xf08c;', SMEDIA_LK),
-                gen_link('&#xf081;', SMEDIA_TW),
-                gen_link('&#xf166;', SMEDIA_YT),
+                gen_link('&#xf16d;', SMEDIA_IG)
             ]
         },
         gen_input('entry.848403666', 'Your email'),
