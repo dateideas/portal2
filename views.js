@@ -27,9 +27,6 @@ var CardView = function(obj){
                 api.save(obj.id);
                 evt.stopPropagation();
             }
-        },{
-            $type: 'img',
-            src: obj.pic
         }];
     }
 
@@ -71,6 +68,7 @@ var CardView = function(obj){
                 $text: obj.title,
             },{
                 class:'card__img',
+                style:'background-image:url("'+obj.pic+'");',
                 $components: gen_image()
             },{
                 class:'card__text',
@@ -197,7 +195,7 @@ var HeaderBuffer = function(){
     return {
         'class':'hbuffer',
         $init: function(){
-            this.style.height = $('#header').scrollHeight + 20;
+            this.style.height = $('#header').scrollHeight;
         }
     };
 };
@@ -387,9 +385,11 @@ var UserView = function(){
                 class:'card',
                 $components:[modal_phone2]
             }]
-        },
-        HeaderBuffer(),
-        ListView('list--faves')]
+        },{
+            $type:'h1',
+            class:'title--styled',
+            $text:'Favourites'
+        },ListView('list--faves')]
     };
 };
 
@@ -527,31 +527,53 @@ var ContentView = function(){
             });
         },
         _update: function(obj){
-            var content = [];
+            var info = [];
 
             if(obj.price){
-                content.push({
-                    class:'content__info content__info--price',
+                info.push({
+                    class:'info__info content__info--price',
                     $text:obj.price
                 });
             }
 
             if(obj.place){
-                content.push({
-                    class:'content__info content__info--place',
+                info.push({
+                    class:'info__info content__info--place',
                     $text:obj.place
                 });
             }
 
             if(obj.time){
-                content.push({
-                    class:'content__info content__info--ptime',
+                info.push({
+                    class:'info__info content__info--ptime',
                     $text:obj.time
                 });
             }
 
+            var content = [{
+                class:'content__info',
+                $components:[{
+                    class:'content__info--details',
+                    $components:info
+                }]
+            }];
+
+            if(obj.link){
+                content[0].$components.push({
+                    class:'content__info--link',
+                    $components:[{
+                        $type:'button',
+                        $text:'website',
+                        onclick:function(){
+                            ga_outbound(obj.link);
+                            location.href = obj.link;
+                        }
+                    }]
+                });
+            }
+
             content.push({
-                class:'content__title',
+                class:'content__title nomobile',
                 $text:obj.title
             });
 
@@ -580,6 +602,10 @@ var ContentView = function(){
             });
 
             $('#details').$components = [{
+                class:'mobile mobile--title',
+                $type:'h1',
+                $text:obj.title
+            },{
                 id:'tab-details',
                 $type:'input',
                 type:'radio',
@@ -712,7 +738,10 @@ function ContributeView(){
         };
     };
     
-    var form = [
+    var form = [{
+            class:'mobile subtitle',
+            $text:'Share your special place with us'
+        },
         gen_input('entry.768945183', 'Your e-mail'),
         gen_input('entry.1567473725', 'Your name'),
         gen_input('entry.2137145260', 'Name of place'),
@@ -730,9 +759,7 @@ function ContributeView(){
             class:'content',
             $components:[{
                 class:'cover'
-            },
-                HeaderBuffer(),
-            {
+            },HeaderBuffer(),{
                 class:'title',
                 $text:'Contribute'
             },{
@@ -797,9 +824,7 @@ function ContactUsView(){
             'class':'content',
             $components:[{
                 class:'cover'
-            },
-                HeaderBuffer(),
-            {
+            },HeaderBuffer(),{
                 class:'title',
                 $text:'Contact Us'
             },{
