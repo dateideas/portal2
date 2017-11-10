@@ -501,7 +501,7 @@ var MainView = function(){
         },{
             class:'preview--header',
             $components:[{
-                class:'preview--header__title',
+                class:'preview--header__title title--styled',
                 $text:'Preview'
             },{
                 class:'preview--header__subtitle',
@@ -717,11 +717,18 @@ var AboutView = function(){
 
     return {
         class:'about',
-        $components:[
-            gen_person('//lorempixel.com/200/200', 'Raimie Tang', 'Mastermind'),
-            gen_person('//lorempixel.com/201/201', 'Shu Peng', 'Code Man'),
-            gen_person('//lorempixel.com/202/202', 'Manfred', 'DateIdea Man'),
-            gen_person('//lorempixel.com/203/203', 'Pattany', 'Design Woman')
+        $components:[{
+            $type:'p',
+            $text:"Have you ever been in that familiar situation where you're prepared to go out on a gathering with friends, or on a date with that special someone, but just can't decide on where to go or what to do?"
+        },{
+            $type:'p',
+            $text:"Well, we feel you. And that is exactly why we launched DateIdeas. DateIdeas delivers top quality DateIdeas straight to your doorstep, so that you'll never be left undecided on what to do on a gathering or date ever again ;)"
+        },
+            gen_person('//i.imgur.com/yhXftQY.jpg?2', 'Raimie Tang', 'Mastermind'),
+            gen_person('//i.imgur.com/nVDCdX8.jpg?2', 'Shu Peng', 'Code Guy'),
+            gen_person('//i.imgur.com/xAoLe3s.jpg?2', 'Manfred', 'DateIdea Guy'),
+            gen_person('//i.imgur.com/Sfe59Zv.jpg?2', 'KuanFei', 'Analytics Guy'),
+            gen_person('//i.imgur.com/HLhSMOG.jpg?2', 'Pattany', 'Design Gal')
         ]
     };
 };
